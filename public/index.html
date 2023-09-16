@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HI</title>
+</head>
+<body>
+    <div id="chatBox"></div>
+    <input type="text" id="messageInput" placeholder="Escribe un mensaje">
+    <button onclick="enviarMensaje()">Enviar</button>
+    <div id="respuestaServidor"></div>
+    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <script>
+        const socket = io();
+
+        function enviarMensaje() {
+            const mensajeInput = document.getElementById('messageInput');
+            const mensaje = mensajeInput.value;
+            socket.emit('enviar mensaje', mensaje);
+            mensajeInput.value = '';
+        }
+
+        function agregarMensaje(mensaje) {
+            const chatBox = document.getElementById('chatBox');
+            const mensajeElement = document.createElement('div');
+            mensajeElement.textContent = mensaje;
+            chatBox.appendChild(mensajeElement);
+        }
+
+        socket.on('nuevo mensaje', (mensaje) => {
+            agregarMensaje(`${mensaje.nick}: ${mensaje.msg}`);
+        });
+
+        socket.on('respuesta_servidor', (respuesta) => {
+            const respuestaServidor = document.getElementById('respuestaServidor');
+            respuestaServidor.textContent = respuesta;
+        });
+    </script>
+</body>
+</html>
